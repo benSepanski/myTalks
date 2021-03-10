@@ -1,0 +1,3 @@
+[submodule "latex-templates"]
+	path = latex-templates
+	url = https://gitlab.com/chipbuster/latex-templates
