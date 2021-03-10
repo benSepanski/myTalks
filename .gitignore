@@ -11,7 +11,7 @@
 *.out
 *.md5
 *.nav
-*.run.sml
+*.run.xml
 *.snm
 *.synctex
 *.synctex.gz
@@ -19,3 +19,4 @@
 *.toc
 *.vrb
 *-eps-converted-to.pdf
+*/_minted-*
