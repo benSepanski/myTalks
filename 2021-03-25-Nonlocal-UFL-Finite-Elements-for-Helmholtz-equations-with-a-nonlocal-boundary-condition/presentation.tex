@@ -3,8 +3,6 @@
 
 % Use UTCS theme:
 \usetheme[]{utcs}
-% slide numbers
-\setbeamertemplate{footline}[frame number]
 
 \usepackage[]{graphicx}
 \usepackage[]{color}
@@ -45,18 +43,18 @@
 %%%%%%%%%%%%%%%%%%%%%%%%             %%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%  Title frame  %%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%             %%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}[plain,noframenumbering]
+\begin{frame}[noframenumbering]
     \titlepage
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%     %%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%  TOC  %%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%     %%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}[plain,noframenumbering]{Order of Presentation}
+\begin{frame}[noframenumbering]{Order of Presentation}
     \tableofcontents
 \end{frame}
 
-\begin{frame}[plain,noframenumbering]
+\begin{frame}[noframenumbering]
 \frametitle{Thanks to\ldots}
 \begin{block}{}
 \begin{itemize}
@@ -74,6 +72,9 @@ Graduate Fellowship under Award Number DE-SC0021110
 %%%%%%%%%%%%%%%%%%%%%%%  SECTION: Motivating problem  %%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%                             %%%%%%%%%%%%%%%%%%%%%%%%
 \section{Motivating Problem: Helmholtz scattering}
+
+% slide numbers
+\setbeamertemplate{footline}[frame number]
 
 %%%%%%%%%%%%%%%%%%%%%%%%                             %%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%  Helmholtz radiation problem  %%%%%%%%%%%%%%%%%%%%%%%%
@@ -161,6 +162,44 @@ Graduate Fellowship under Award Number DE-SC0021110
     \end{columns}
 \end{frame}
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%              %%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%  PML Approach  %%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%              %%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Exterior scattering: PML}
+    \begin{columns}
+    \begin{column}{0.45\textwidth}
+        \begin{figure}[ht]
+        \begin{center}
+        \begin{tikzpicture}[scale=0.8]
+            \draw [thick,fill=black!30] (-3,-3) rectangle (3,3)
+            (0, 0) circle (1);
+            \node at (0,0) {$\Omega^c$};
+            \node at (-2,2) {$\Omega'$};
+            \node [anchor=west] at (1,0) {$\Gamma$};
+            \node [anchor=west] at (3,0) {$\Sigma$};
+        \end{tikzpicture}
+        \end{center}
+        \end{figure}
+    \end{column}
+    \begin{column}{0.55\textwidth}
+        \begin{itemize}
+            \item Perfectly Matched Layers:
+            \[
+                \begin{cases}
+                    -\nabla \cdot \beta(x) \nabla u + \kappa^2 u = 0,  & \Omega^\prime \\
+                    -\frac{\partial u}{\partial n}  =  f, &\Gamma \\
+                    u = 0, &\Sigma
+                \end{cases}
+            \]
+              \item<2-> $\beta = I$ in $\Omega^\prime$
+              \item<3-> $\beta$ is complex-valued, eats waves in $\Omega_S$
+              \item<4-> Solution is right in $\Omega^\prime$
+              \item<5-> {\bf Solvers are a pain!}
+        \end{itemize}
+    \end{column}
+    \end{columns}
+\end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%                           %%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%  Integral equations review  %%%%%%%%%%%%%%%%%%%%%%%%
@@ -397,7 +436,7 @@ With $\mathcal{K}$ the Green's function, the \emph{true} solution satisfies:
             problem, we get a good preconditioner for the nonlocal
             problem
         \vfill
-        \item<2->PyAMG:\@ Precondition with plane waves
+        \item<2->PyAMG:\@ precondition with plane waves
             \begin{figure}[ht]
             \begin{center}
                 \includegraphics[width=0.8\textwidth]{images/pyamg.png}
@@ -562,7 +601,7 @@ With $\mathcal{K}$ the Green's function, the \emph{true} solution satisfies:
 %%%%%%%%%%%%%%%%%%%%%%%%           %%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%  Thank you  %%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%           %%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}[plain,noframenumbering]{Thank you!}
+\begin{frame}[noframenumbering]{Thank you!}
     \begin{center}
         Questions?
     \end{center}
@@ -571,54 +610,16 @@ With $\mathcal{K}$ the Green's function, the \emph{true} solution satisfies:
 %%%%%%%%%%%%%%%%%%%%%%%%               %%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%  Backup slides  %%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%               %%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}[plain,noframenumbering]
+\begin{frame}[noframenumbering]
     \begin{center}
         Backup Slides
     \end{center}
 \end{frame}
 
-%%%%%%%%%%%%%%%%%%%%%%%%              %%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%  PML Approach  %%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%              %%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}[plain,noframenumbering]{Exterior scattering: PML}
-    \begin{columns}
-    \begin{column}{0.45\textwidth}
-        \begin{figure}[ht]
-        \begin{center}
-        \begin{tikzpicture}[scale=0.8]
-            \draw [thick,fill=black!30] (-3,-3) rectangle (3,3)
-            (0, 0) circle (1);
-            \node at (0,0) {$\Omega^c$};
-            \node at (-2,2) {$\Omega'$};
-            \node [anchor=west] at (1,0) {$\Gamma$};
-            \node [anchor=west] at (3,0) {$\Sigma$};
-        \end{tikzpicture}
-        \end{center}
-        \end{figure}
-    \end{column}
-    \begin{column}{0.55\textwidth}
-        \begin{itemize}
-            \item Perfectly Matched Layers:
-            \[
-                \begin{cases}
-                    -\nabla \cdot \beta(x) \nabla u + \kappa^2 u = 0,  & \Omega^\prime \\
-                    -\frac{\partial u}{\partial n}  =  f, &\Gamma \\
-                    u = 0, &\Sigma
-                \end{cases}
-            \]
-              \item<2-> $\beta = I$ in $\Omega^\prime$
-              \item<3-> $\beta$ is complex-valued, eats waves in $\Omega_S$
-              \item<4-> Solution is right in $\Omega^\prime$
-              \item<5-> {\bf Solvers are a pain!}
-        \end{itemize}
-    \end{column}
-    \end{columns}
-\end{frame}
-
 %%%%%%%%%%%%%%%%%%%%%%%%                     %%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%  Theoretical results  %%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%                     %%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}[plain,noframenumbering]{Theory}
+\begin{frame}[noframenumbering]{Theory}
     \begin{itemize}
         \item<2-> $a$ is a bounded bilinear form on $H^1 \times H^1$
         \item<3-> $F$ is a bounded linear functional on $H^1$
@@ -633,28 +634,28 @@ With $\mathcal{K}$ the Green's function, the \emph{true} solution satisfies:
 %%%%%%%%%%%%%%%%%%%%%%%%                      %%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%  Extra accuracy plots  %%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%                      %%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}[plain,noframenumbering]{Numerical results: 2D, degree 2}
+\begin{frame}[noframenumbering]{Numerical results: 2D, degree 2}
     \begin{figure}[ht]
     \begin{center}
         \includegraphics[width=0.8\textwidth]{images/degree-2-accuracy.png}
     \end{center}
     \end{figure}
 \end{frame}
-\begin{frame}[plain,noframenumbering]{Numerical results: 2D, degree 3}
+\begin{frame}[noframenumbering]{Numerical results: 2D, degree 3}
     \begin{figure}[ht]
     \begin{center}
         \includegraphics[width=0.8\textwidth]{images/degree-3-accuracy.png}
     \end{center}
     \end{figure}
 \end{frame}
-\begin{frame}[plain,noframenumbering]{Numerical results: 2D, degree 4}
+\begin{frame}[noframenumbering]{Numerical results: 2D, degree 4}
     \begin{figure}[ht]
     \begin{center}
         \includegraphics[width=0.8\textwidth]{images/degree-4-accuracy.png}
     \end{center}
     \end{figure}
 \end{frame}
-\begin{frame}[plain,noframenumbering]{Numerical results: 3D, degree 1}
+\begin{frame}[noframenumbering]{Numerical results: 3D, degree 1}
     \begin{figure}[ht]
     \begin{center}
         \includegraphics[width=0.8\textwidth]{images/3d-accuracy.png}
