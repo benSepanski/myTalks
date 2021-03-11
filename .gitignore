@@ -10,6 +10,7 @@
 *.log
 *.out
 *.md5
+*.pygtex
 *.nav
 *.run.xml
 *.snm
@@ -20,3 +21,4 @@
 *.vrb
 *-eps-converted-to.pdf
 */_minted-*
+*/tikz/*

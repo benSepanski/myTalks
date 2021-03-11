@@ -143,7 +143,7 @@
 
 %Use biber for special bibliogrphay.  The next few lines are all custom hacks to
 %make nice footnote citation in beamer.
-\usepackage[hyperref=true,style=verbose,labeldate=true,minnames=2,maxnames=10,maxbibnames=99]{biblatex}
+\usepackage[hyperref=true,minnames=2,maxnames=10,maxbibnames=99]{biblatex}
 %Use utorange for hyperlinks
 \hypersetup{colorlinks=true, allcolors=utblack, linkcolor=utblack,
   urlcolor=utorange, citecolor=utgreen}
@@ -151,7 +151,7 @@
 %\renewcommand*{\labelnamepunct}{\addcolon\addspace}
 \DeclareFieldFormat[article,inbook,incollection,inproceedings,patent,thesis,unpublished]
 {title}{#1\isdot}
-\renewbibmacro*{cite:short}{%
+\newbibmacro*{cite:short}{%
   \printnames{labelname}%
   \setunit*{\addspace}%
   \printtext[bibhyperlink]{%
