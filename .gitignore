@@ -14,7 +14,7 @@
 *.nav
 *.run.xml
 *.snm
-*.synctex
+*.synctex*
 *.synctex.gz
 *.swp
 *.toc
