@@ -100,18 +100,18 @@ Graduate Fellowship under Award Number DE-SC0021110
             \item<1-> Model waves reflecting off of obstacle $\Gamma$
             \[
                 \begin{cases}
-                    -\Delta u + \kappa^2 u = 0, &  \mathbb R^d\setminus\Omega \\
+                    -\Delta u + \kappa^2 u = 0, &  \mathbb R^d\setminus\Omega^c \\
                     -\frac{\partial u}{\partial n} = f, & \Gamma
                 \end{cases}
             \]
             \item<2-> \emph{Without} any spurious reflections from infinity
             \[
                 \lim_{r\to\infty} r^{(d-1)/2}
-                    \left(\tfrac{\partial u}{\partial r} - i\kappa u\right)
+                    \left(\tfrac{\partial u}{\partial r} - i\kappa u\right)
                 = 0
             \]
             \item<3-> In some finite domain of interest 
-            $\Omega'\subseteq \mathbb R^d\setminus\Omega'$
+            $\Omega'\subseteq \mathbb R^d\setminus\Omega^c$
             bounded by $\Sigma$.
         \end{itemize}
     \end{column}
@@ -171,13 +171,14 @@ Graduate Fellowship under Award Number DE-SC0021110
     \begin{column}{0.45\textwidth}
         \begin{figure}[ht]
         \begin{center}
-        \begin{tikzpicture}[scale=0.8]
-            \draw [thick,fill=black!30] (-3,-3) rectangle (3,3)
-            (0, 0) circle (1);
-            \node at (0,0) {$\Omega^c$};
-            \node at (-2,2) {$\Omega'$};
-            \node [anchor=west] at (1,0) {$\Gamma$};
-            \node [anchor=west] at (3,0) {$\Sigma$};
+         \begin{tikzpicture}[scale=0.7]
+            \draw [thick,fill=black!60] (-4,-4) rectangle (4,4);
+            \draw [thick,fill=black!30] (-3,-3) rectangle (3,3);
+            \draw [fill=white] (0, 0) circle (1);
+          \node at (0,0) {$\Omega^c$};
+          \node at (-2,2) {$\Omega'$};
+          \node [anchor=west] at (1,0) {$\Gamma$};
+          \node [anchor=west] at (3,0) {$\Omega_S$};
         \end{tikzpicture}
         \end{center}
         \end{figure}
@@ -209,7 +210,7 @@ Graduate Fellowship under Award Number DE-SC0021110
 \begin{frame}{Integral form of the solution}
 With $\mathcal{K}$ the Green's function, the \emph{true} solution satisfies:
   \begin{equation*}
-      u(x) = D(u)(x) - S(\tfrac{\partial}{\partial n})(x), \quad x \in\Omega'
+      u(x) = D(u)(x) - S(\tfrac{\partial u}{\partial n})(x), \quad x \in\Omega'
   \end{equation*}
   where
 \visible<2->{
@@ -219,7 +220,7 @@ With $\mathcal{K}$ the Green's function, the \emph{true} solution satisfies:
 }
 \visible<3->{
     \begin{equation*}
-    S(u)(x) = \int  \mathcal K (x - y ) u(y)dy
+    S(u)(x) = \int_\Gamma \mathcal K (x - y ) u(y)dy
     \end{equation*}
 }
 \end{frame}
@@ -261,7 +262,7 @@ With $\mathcal{K}$ the Green's function, the \emph{true} solution satisfies:
     \begin{block}{Variational Form:}
         \vspace{1mm}
         \begin{center}
-            $a(u,v) = F(v)$ for all $v\in H^2(\Omega^\prime)$
+            $a(u,v) = F(v)$ for all $v\in H^1(\Omega^\prime)$
         \end{center}
         \only<-4>{ \visible<3,4>{
         \begin{equation*}
@@ -277,7 +278,7 @@ With $\mathcal{K}$ the Green's function, the \emph{true} solution satisfies:
             F(v) = 
                 \langle f, v \rangle_\Gamma
                 + \langle \left(i\kappa - \tfrac{\partial}{\partial n}\right)
-                    S(u), v \rangle_\Sigma
+                    S(f), v \rangle_\Sigma
         \end{equation*}
         }}
         \only<5->{
@@ -298,7 +299,7 @@ With $\mathcal{K}$ the Green's function, the \emph{true} solution satisfies:
                 }_{\text{local}}
                 + \underbrace{
                     \langle \left(i\kappa - \tfrac{\partial}{\partial n}\right)
-                    S(u), v \rangle_\Sigma
+                    S(f), v \rangle_\Sigma
                 }_{\text{nonlocal}}
         \end{equation*}
         }
