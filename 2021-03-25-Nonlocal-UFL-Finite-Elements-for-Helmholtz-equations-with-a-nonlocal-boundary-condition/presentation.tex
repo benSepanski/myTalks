@@ -2,7 +2,18 @@
 \usepackage[utf8]{inputenc}
 
 % Use UTCS theme:
-\usetheme[]{utcs}
+\usetheme[nousebiblatex]{utcs}
+
+\usepackage[
+backend=biber,
+citestyle=authoryear,
+style=authoryear,
+hyperref=true
+]{biblatex}
+\usepackage{hyperref}
+%Use utorange for hyperlinks
+\hypersetup{colorlinks=true, allcolors=utblack, linkcolor=utblack,
+  urlcolor=utorange, citecolor=utorange}
 
 \usepackage[]{graphicx}
 \usepackage[]{color}
@@ -14,14 +25,18 @@
 \usetikzlibrary{calc}
 \usepackage[export]{adjustbox}
 % externalize tikz
-\usetikzlibrary{external}
-\tikzexternalize[prefix=./tikz/]
+%\usetikzlibrary{external}
+%\tikzexternalize[prefix=./tikz/]
 
 \usepackage{amssymb,latexsym,amsmath}
 \usepackage{amsfonts}
 \usepackage{amsbsy}
 
 \usepackage{minted}
+
+\setbeamercovered{transparent}
+
+\bibliography{presentation.bib}
 
 \newcommand{\sep}{\setlength\arraycolsep{2pt}}
 \def\disp{\displaystyle}
@@ -79,7 +94,7 @@ Graduate Fellowship under Award Number DE-SC0021110
 %%%%%%%%%%%%%%%%%%%%%%%%                             %%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%  Helmholtz radiation problem  %%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%                             %%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{Exterior scattering}
+\begin{frame}{Exterior scattering\footcite{Colton_Kress_1998,Kress_1999}}
     \begin{columns}
     \begin{column}{0.45\textwidth}
         \begin{figure}[ht]
@@ -166,12 +181,12 @@ Graduate Fellowship under Award Number DE-SC0021110
 %%%%%%%%%%%%%%%%%%%%%%%%              %%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%  PML Approach  %%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%              %%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{Exterior scattering: PML}
+\begin{frame}{Exterior scattering: Perfectly Matched Layers (PML)\footcite{BERENGER1994185,Erlangga_2006,Bermudez_Hervella-Nieto_Prieto_Rodrguez_2006}}
     \begin{columns}
     \begin{column}{0.45\textwidth}
         \begin{figure}[ht]
         \begin{center}
-         \begin{tikzpicture}[scale=0.7]
+         \begin{tikzpicture}[scale=0.6]
             \draw [thick,fill=black!60] (-4,-4) rectangle (4,4);
             \draw [thick,fill=black!30] (-3,-3) rectangle (3,3);
             \draw [fill=white] (0, 0) circle (1);
@@ -179,27 +194,29 @@ Graduate Fellowship under Award Number DE-SC0021110
           \node at (-2,2) {$\Omega'$};
           \node [anchor=west] at (1,0) {$\Gamma$};
           \node [anchor=west] at (3,0) {$\Omega_S$};
+          \node [anchor=west] at (4,0) {$\Sigma$};
         \end{tikzpicture}
         \end{center}
         \end{figure}
+        \vfill
     \end{column}
     \begin{column}{0.55\textwidth}
-        \begin{itemize}
-            \item Perfectly Matched Layers:
-            \[
-                \begin{cases}
-                    -\nabla \cdot \beta(x) \nabla u + \kappa^2 u = 0,  & \Omega^\prime \\
-                    -\frac{\partial u}{\partial n}  =  f, &\Gamma \\
-                    u = 0, &\Sigma
-                \end{cases}
-            \]
-              \item<2-> $\beta = I$ in $\Omega^\prime$
-              \item<3-> $\beta$ is complex-valued, eats waves in $\Omega_S$
-              \item<4-> Solution is right in $\Omega^\prime$
-              \item<5-> {\bf Solvers are a pain!}
-        \end{itemize}
+        \[
+            \begin{cases}
+                -\nabla \cdot \beta(x) \nabla u + \kappa^2 u = 0,  & \Omega^\prime \\
+                -\frac{\partial u}{\partial n}  =  f, &\Gamma \\
+                u = 0, &\Sigma
+            \end{cases}
+        \]
+            \begin{itemize}
+              \item<2-> $\Omega'$: $\beta = I$, satisfies original equation
+              \item<3-> $\Omega_S$: $\beta$ is a complex-valued coordinate transform to cause exponential decay
+              in oscillating waves
+              \item<4-> {\bf Preconditioning is difficult!\footnotemark}
+            \end{itemize}
     \end{column}
     \end{columns}
+    \footcitetext{EngquistPMLPreconditioner2011,Safin_Minkoff_Zweck_2018}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%                           %%%%%%%%%%%%%%%%%%%%%%%%
@@ -208,20 +225,45 @@ Graduate Fellowship under Award Number DE-SC0021110
 \section{A nonlocal boundary condition}
 
 \begin{frame}{Integral form of the solution}
-With $\mathcal{K}$ the Green's function, the \emph{true} solution satisfies:
-  \begin{equation*}
-      u(x) = D(u)(x) - S(\tfrac{\partial u}{\partial n})(x), \quad x \in\Omega'
-  \end{equation*}
-  where
-\visible<2->{
-    \begin{equation*}
-        D(u)(x) = \int_\Gamma \left( \tfrac{\partial}{\partial n} \mathcal K( x-y) \right)u(y) dy, 
-    \end{equation*}
+\only<1>{
+    Using the Helmholtz Green's function $\mathcal K\left(\mathbf{x}\right)
+                =\displaystyle\frac{i}{4\pi \left|\mathbf{x}\right|}
+                \displaystyle e^{i\kappa\left|\mathbf{x}\right|}$,
+  \begin{figure}
+    \begin{center}
+    \includegraphics[width=0.5\textwidth]{images/2d_helmholtz_greens_function.png}
+    \end{center}\caption{$\mathcal K$ in 2D}
+  \end{figure}
 }
-\visible<3->{
-    \begin{equation*}
-    S(u)(x) = \int_\Gamma \mathcal K (x - y ) u(y)dy
-    \end{equation*}
+\only<2->{
+    \begin{columns}
+      \begin{column}{0.7\textwidth}
+             Using the Helmholtz Green's function \[\mathcal K\left(\mathbf{x}\right)
+                =\displaystyle\frac{i}{4\pi \left|\mathbf{x}\right|}
+                \displaystyle e^{i\kappa\left|\mathbf{x}\right|},\]
+      \end{column}
+      \begin{column}{0.3\textwidth}
+        \begin{figure}
+        \begin{center}
+          \includegraphics[width=0.5\textwidth]{images/2d_helmholtz_greens_function.png}
+          \end{center}\caption{$\mathcal K$ in 2D}
+          \end{figure}
+      \end{column}
+    \end{columns}
+
+    the \emph{true solution} satisfies          \footcite{Colton_Kress_1998,Kress_1999}
+
+      \begin{equation*}
+          u(x) = D(u)(x) - S(\tfrac{\partial u}{\partial n})(x), \quad x \in\Omega'
+      \end{equation*}
+      where
+    \uncover<3->{
+        \begin{align*}
+            D(u)(x) &= \int_\Gamma \left( \tfrac{\partial}{\partial n} \mathcal K( x-y) \right)u(y) \,dy, 
+            \\
+            S(u)(x) &= \int_\Gamma \mathcal K (x - y ) u(y)\,dy
+        \end{align*}
+    }
 }
 \end{frame}
 
@@ -258,55 +300,41 @@ With $\mathcal{K}$ the Green's function, the \emph{true} solution satisfies:
         \end{column}
     \end{columns}
 
-    \visible<2->{
+    \uncover<2->{
+    \hfill
     \begin{block}{Variational Form:}
+        For all $v\in H^1(\Omega')$
         \vspace{1mm}
-        \begin{center}
-            $a(u,v) = F(v)$ for all $v\in H^1(\Omega^\prime)$
-        \end{center}
-        \only<-4>{ \visible<3,4>{
-        \begin{equation*}
-            a(u, v) = 
-                    \left( \nabla u, \nabla v \right)
-                    - \kappa^2 \left( u, v \right)
-                    - i\kappa \langle u, v \rangle_\Sigma
-                    + \langle \left(i\kappa - \tfrac{\partial}{\partial n}\right)D(u), v \rangle
-        \end{equation*}
-        }
-        \visible<4>{
-        \begin{equation*}
-            F(v) = 
-                \langle f, v \rangle_\Gamma
-                + \langle \left(i\kappa - \tfrac{\partial}{\partial n}\right)
+        \begin{alignat*}{2}
+            \left( \nabla u, \nabla v \right)
+            - \kappa^2 \left( u, v \right)
+            - i\kappa &\langle u, v \rangle_\Sigma
+            &+ \langle \left(i\kappa - \tfrac{\partial}{\partial n}\right)D(u), v \rangle_\Sigma
+            \\
+            = \;&\langle f, v \rangle_\Gamma
+                &+ \langle \left(i\kappa - \tfrac{\partial}{\partial n}\right)
                     S(f), v \rangle_\Sigma
-        \end{equation*}
-        }}
-        \only<5->{
-        \begin{equation*}
-            a(u, v) = 
-                \underbrace{
-                    \left( \nabla u, \nabla v \right)
-                    - \kappa^2 \left( u, v \right)
-                    - i\kappa \langle u, v \rangle_\Sigma
-                }_{\text{local}}
-                + \underbrace{
-                    \langle \left(i\kappa - \tfrac{\partial}{\partial n}\right)D(u), v \rangle
-                }_{\text{nonlocal}}
-        \end{equation*}
-        \begin{equation*}
-            F(v) = \underbrace{
-                \langle f, v \rangle_\Gamma
-                }_{\text{local}}
-                + \underbrace{
-                    \langle \left(i\kappa - \tfrac{\partial}{\partial n}\right)
-                    S(f), v \rangle_\Sigma
-                }_{\text{nonlocal}}
-        \end{equation*}
-        }
+        \end{alignat*}
+        \vspace{1mm}
     \end{block}
     }
 \end{frame}
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%                     %%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%  Theoretical results  %%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%                     %%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Theory}
+    \begin{itemize}
+        \item<2-> $a$ is a bounded bilinear form on $H^1 \times H^1$
+        \item<3-> $F$ is a bounded linear functional on $H^1$
+        \item<4-> G{\aa}rding inequality. There exist $M$ and an $\alpha > 0$ such that
+        \begin{equation*}
+            \operatorname{Re}(a(u,u)) + M \left\| u \right\|^2 \geq \alpha \left\| u \right\|_{H^1(\Omega)}^2.
+            \end{equation*}
+        \item<5-> For $h \leq h_0$, we have optimal-order $H^1$ and $L^2$ error estimates.\footcite{kirby2021finite}
+    \end{itemize}
+\end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%                       %%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%  SECTION: Nonlocal UFL  %%%%%%%%%%%%%%%%%%%%%%%%
@@ -318,19 +346,35 @@ With $\mathcal{K}$ the Green's function, the \emph{true} solution satisfies:
 %%%%%%%%%%%%%%%%%%%%%%%%              %%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}{Nonlocal operations in UFL}
     \begin{itemize}
-        \item<1-> \emph{Problem:} Nonlocal operations have large support (all of
+        \item \emph{Recall:} 
+        \only<-5>{
+            \[
+                D(u)(x) = \int_{\Gamma} \tfrac{\partial}{\partial n}\mathcal K(x - y) u(y) \,dy,
+                \qquad x\in \Sigma
+            \]
+        }
+        \only<6->{
+            \[
+                D(u)({\color{utorange}x}) = 
+                \int_{\color{blue}\Gamma} 
+                \tfrac{\partial}{\partial n}\mathcal K({\color{utorange}x} - 
+                {\color{blue}y}) u({\color{blue}y})
+                \,d{\color{blue}y},
+                \qquad {\color{utorange}x}\in{\color{utorange}\Sigma}
+            \]
+        }
+        \item<2-> \emph{Problem:} Nonlocal operations have large support (all of
             $\Sigma$!)
         \begin{itemize}
-            \item<1-> This makes our stiffness matrix dense, especially
+            \item<3-> This makes our stiffness matrix dense, especially
                 in 3D
-            \item<2-> \emph{Solution:} Firedrake's matrix-free evaluation
+            \item<4-> \emph{Solution:} Firedrake's matrix-free evaluation
         \end{itemize}
         \vfill
-        \item<3-> \emph{Problem:} Naive evaluation of layer potentials is 
-            $\mathcal O\left(\left|\Gamma\right|\cdot\left|\Sigma\right|\right)$
+        \item<5-> \emph{Problem:} Naive evaluation of layer potentials is slow:
         \begin{itemize}
-            \item<4-> \emph{Solution:} Use pytential to evaluate layer
-                potentials with fast multiple methods (FMM) 
+            \item<7-> $\operatorname{ndof}(\Gamma)\cdot \operatorname{ndof}(\Sigma)$
+            \item<8-> \emph{Solution:} Fast multipole methods (FMM)\footcite{Carrier_Greengard_Rokhlin_1988}: use the structure of $\mathcal K$ to compute the potential in \emph{linear time} with low-rank approximations
         \end{itemize}
     \end{itemize}
 \end{frame}
@@ -338,36 +382,39 @@ With $\mathcal{K}$ the Green's function, the \emph{true} solution satisfies:
 %%%%%%%%%%%%%%%%%%%%%%%%                       %%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%  Building BEM into UFL  %%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%                       %%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{Nonlocal operations in UFL:\@ Marshalling pytential}
+\begin{frame}{Nonlocal operations in UFL:\@ Marshalling pytential\footcite{KlöcknerPytential}}
     \begin{itemize}
-        \item Build \mintinline{python}{LayerPotential} as a UFL external operator
-            (in-development at firedrake)
+        \item Build \mintinline{python}{LayerPotential} as a UFL External Operator\footnote{N. Bouziani, \emph{External Operators}:
+        {\tiny\url{https://fenics2021.com/talks/bouziani.html}}}
             \begin{itemize}
                 \vfill
                 \item<2->[\checkmark] Build pytential representation
                     of domain of interest
                 \only<3>{
-                    \includegraphics[width=0.70\textwidth]{images/coarse_near_gamma2d.png}
+                    \includegraphics[width=0.65\textwidth]{images/coarse_near_gamma2d.png}
                 }
-                \vfill
-                \item<4->[\checkmark] Build pytential representation
-                    of function space
-                \vfill
-                \item<5->[\checkmark] Build efficient converter between
-                    pytential and firedrake representations
-                \vfill
-                \item<6-> Fully support automatic differentiation
+                \only<-2,4->{
+                    \vfill
+                    \item<4->[\checkmark] Build pytential representation
+                        of function space
+                    \vfill
+                    \item<5->[\checkmark] Build efficient converter between
+                        pytential and firedrake representations
+                    \vfill
+                    \item<6-> Fully support automatic differentiation
+                }
             \end{itemize}
         \vfill
-    \item<7-> Evaluation of $\left\langle(i\kappa - \tfrac{\partial}{\partial n})D(u), v\right\rangle_\Sigma$ 
-        \begin{itemize}
-            \vfill
-            \item<8->[\checkmark] \mintinline{python}{LayerPotential} evaluates $D(u)$
-                (using pytential under the hood)
-            \vfill
-            \item<9->[\checkmark] Firedrake evaluates inner product
+        \only<-2,4->{
+        \item<7-> Evaluation of $\left\langle(i\kappa - \tfrac{\partial}{\partial n})D(u), v\right\rangle_\Sigma$ 
+            \begin{itemize}
+                \vfill
+                \item<8->[\checkmark] \mintinline{python}{LayerPotential} evaluates $D(u)$ (automatically uses pytential, which employs FMM to compute the potential)
+                \vfill
+                \item<9->[\checkmark] Firedrake evaluates inner product
+            \end{itemize}
+        }
         \end{itemize}
-    \end{itemize}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%                                    %%%%%%%%%%%%%%%%%%%%%%%
@@ -381,20 +428,16 @@ With $\mathcal{K}$ the Green's function, the \emph{true} solution satisfies:
         - i \kappa \langle u, v \rangle_{\Sigma}
         + \langle \left( i \kappa - \tfrac{\partial}{\partial n} \right) D(u)  v \rangle_\Sigma
     \]
-    \only<-2>{
-    \visible<2>{
+    \visible<2->{
     Will be written as:
     \begin{figure}[ht]
         \begin{center}
-            \includegraphics[width=\textwidth]{images/future-code.png}
-        \end{center}
-    \end{figure}
-    }}
-    \only<3->{
-    Can currently be written as:
-    \begin{figure}[ht]
-        \begin{center}
-            \includegraphics[width=\textwidth]{images/current-code.png}
+            \only<-2>{
+            \includegraphics[width=\textwidth]{images/code.png}
+            }
+            \only<3->{
+            \includegraphics[width=\textwidth]{images/code-focused.png}
+            }
         \end{center}
     \end{figure}
     }
@@ -406,26 +449,22 @@ With $\mathcal{K}$ the Green's function, the \emph{true} solution satisfies:
 %%%%%%%%%%%%%%%%%%%%%%%  Accuracy plots  %%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%                %%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}{Numerical results: 2D}
-    \visible<2->{
     \begin{figure}[ht]
     \begin{center}
         \includegraphics[width=0.8\textwidth]{images/degree-1-accuracy.png}
     \end{center}
     \end{figure}
-    }
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%                 %%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%  Preconditioning  %%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%                 %%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}{Preconditioning: LU of local part}
-    \visible<2->{
     \begin{figure}[ht]
     \begin{center}
         \includegraphics[width=0.75\textwidth]{images/iteration-pc-by-transmission.png}
     \end{center}
     \end{figure}
-    }
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%       %%%%%%%%%%%%%%%%%%%%%%%%
@@ -447,165 +486,49 @@ With $\mathcal{K}$ the Green's function, the \emph{true} solution satisfies:
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%             %%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%  Future work  %%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%  Conclusion  %%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%             %%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{Future work}
-    \begin{itemize}
-        \item<1-> \emph{Coming soon}: automatic differentiation of \mintinline{python}{LayerPotential}s through UFL
-        \vfill
-        \item<2-> \emph{Coming soon}: \mintinline{python}{VolumePotential}s in UFL
-        \vfill
-        \item<3-> Leveraging nonlocal UFL to solve more FEM-BEM problems in Firedrake!
+\begin{frame}{Conclusion}
+    \begin{columns}
+        \begin{column}{0.55\textwidth}
+        \begin{block}{Results}
             \begin{itemize}
-                \item Further investigation into preconditioners
+                \item Novel nonlocal boundary condition
+                \begin{itemize}
+                    \item Error estimates
+                    \footnotemark
+                \end{itemize}
+                \item Extension of UFL to efficiently handle nonlocal operators
+                \item Numerical experiments demonstrating optimal-order convergence
+                \item Investigation into preconditioners
             \end{itemize}
-    \end{itemize}
+        \end{block}
+        \end{column}
+        \begin{column}{0.45\textwidth}
+        \begin{block}{Coming Soon}
+            \begin{itemize}
+                \item Full implementation of \mintinline{python}{LayerPotential}s
+                and \mintinline{python}{VolumePotential}\footnotemark s in UFL as External Operator\footnotemark s
+                
+                \item General theory for this method and application to more problems
+            \end{itemize}
+        \end{block}
+        \end{column}
+    \end{columns}
+    \vfill
+    % have to handle footnote counting manually
+    \addtocounter{footnote}{-1}
+    \footcitetext{kirby2021finite}
+    \stepcounter{footnote}
+    \footnotetext{X. Wei, \emph{IEM-FEM Coupling}:
+        {\tiny\url{https://fenics2021.com/talks/wei.html}}}
+    \stepcounter{footnote}
+     \footnotetext{N. Bouziani, \emph{External Operators}:
+        {\tiny\url{https://fenics2021.com/talks/bouziani.html}}}
 \end{frame}
 
-%
-%\begin{frame}[fragile]{Numerical results}
-%\begin{figure}
-%
-%\begin{center}
-%    \def \plotaccuracy[#1](#2) % [kappa](color)
-%    {
-%        \begin{tikzpicture}[scale=0.5]
-%        \begin{loglogaxis}[legend style={at={(1.0,0.0)},anchor=south east},
-%                           xlabel=$h$,
-%                           ylabel=$L^2$ Error,
-%                           title={$\kappa=$#1},
-%                           filter discard warning=false,
-%                           cycle list={
-%                               {#2, mark=x}, {#2, mark=o}, {#2, mark=+},
-%                           },
-%                           scale=0.8]
-%            \foreach \method in {pml,transmission,nonlocal} {
-               % \addplot+[only marks, thick]
-                   % table [x=h,
-                          % y expr={\thisrow{kappa}==#1?\thisrow{\method\space lu L2 Error}:nan},
-                          % col sep=comma] {data/2d_data.csv};
-               % \addlegendentryexpanded{\method};
-           % };
-       % \end{loglogaxis}
-       % \end{tikzpicture}
-       % }
-   % \begin{tabular}{c c}
-   %     \plotaccuracy[0.1](red) & \plotaccuracy[1.0](blue) \\
-   %     \plotaccuracy[5.0](brown) & \plotaccuracy[10.0](black) \\
-   % \end{tabular}
-% \end{center}
-%\label{fig:2daccuracy}
-%\end{figure}  
-%\end{frame}
-%
-%\begin{frame}{Preconditioning}
-%  Flexible GMRES requires right-preconditioning:
-%  \[ A \left( P^{-1} \mathbf y \right) = \mathbf b; \ \ \ \mathbf y = P \mathbf x \]%
-%  \visible<2->{Our choice of preconditioner\ldots}
-%  \visible<3->{\[ P = A^L \] }
-%\end{frame}
-%
-%\begin{frame}{Using LU on $A^L$}
-%  \begin{figure}
-%\begin{center}
-%\begin{tikzpicture}
-%    \begin{semilogxaxis}[
-%        legend style={at={(1.0,0.0)},anchor=south east},
-%        xlabel=$h$,
-%        ylabel=Iteration Number,
-%        filter discard warning=false,
-%        cycle list={%
-%            {red, solid, mark=*},
-%            {blue, densely dotted, mark=square*},
-%            {brown, densely dashed, mark=triangle*},
-%            {black, dashdotted, mark=diamond*},
-%        }]
-%    \foreach \k in {0.1,1.0,5.0,10.0} {
-%        \addplot+[thick]
-%            table [x=h,
-%                   y expr={\thisrow{kappa}==\k?\thisrow{nonlocal lu Iteration Number}:nan},
-%                   col sep=comma] {data/2d_data.csv};
-%       \addlegendentryexpanded{$\kappa=$\k};
-%    };
-%    \end{semilogxaxis}
-%\end{tikzpicture}
-%\end{center}
-%\label{fig:luIterationNumber}\end{figure}
-%\end{frame}
-
-%\begin{frame}{Scalable: gamg?}
-%\begin{figure}
-%\begin{center}
-%\begin{tikzpicture}[scale=0.5]
-%    \begin{semilogxaxis}[
-%        legend style={at={(1.0,1.0)},anchor=north east},
-%        xlabel=$h$,
-%        ylabel=Iteration Number,
-%        filter discard warning=false,
-%        cycle list={%
-%            {red, solid, mark=*},
-%            {blue, densely dotted, mark=square*},
-%            {brown, densely dashed, mark=triangle*},
-%            {black, dashdotted, mark=diamond*},
-%        }]
-%    \foreach \k in {0.1,1.0} {
-%        \addplot+[thick]
-%            table [x=h,
-%                   y expr={\thisrow{kappa}==\k?\thisrow{nonlocal gamg Iteration Number}:nan},
-%                   col sep=comma] {data/2d_data.csv};
-%       \addlegendentryexpanded{$\kappa=$\k};
-%    };
-%    \end{semilogxaxis}
-%\end{tikzpicture}
-%\end{center}
-%\label{fig:gamgIterationNumber}\end{figure}%
-%\visible<2->{And explodes for higher $\kappa$.}
-%\end{frame}
-
-%% \begin{frame}{What about PyAMG (plane waves)?}
-%%   \centering
-%%   \includegraphics[width=\textwidth]{foo.pdf}
-%% \end{frame}
-%\begin{center}
-%    \def \plotwcycles[#1]
-%    {
-%        \begin{tikzpicture}[scale=0.7]
-%        \begin{semilogxaxis}[legend style={at={(0.80,0.50)},anchor=south east},
-%                             xlabel=$h$,
-%                             ylabel=Iteration Count,
-%                             title={W-Cycles: #1},
-%                             filter discard warning=false,
-%                             cycle list={%
-%                                {red, solid, mark=*},
-%                                {blue, densely dotted, mark=square*},
-%                                {brown, densely dashed, mark=triangle*},
-%                                {black, dashdotted, mark=diamond*},
-%                             },
-%                             scale=0.8]
-%            \foreach \kappaval in {0.1,1.0,5.0,10.0} {
-%                \addplot+[thick]
-%                    table [x=h,
-%                           discard if not={pyamgmaxiter}{#1},
-%                            y expr={\thisrow{kappa}==\kappaval?\thisrow{nonlocal pyamg Iteration Number}:nan},
-%                           col sep=comma] {data/pyamg_2d_data.csv};
-%                \addlegendentryexpanded{$\kappa=\kappaval$};
-%            };
-%        \end{semilogxaxis}
-%        \end{tikzpicture}
-%    }
-%    \begin{tabular}{c c}
-%        \plotwcycles[1] & \plotwcycles[3]
-%    \end{tabular}
-% \end{center}
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%           %%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%  Thank you  %%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%           %%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}[noframenumbering]{Thank you!}
-    \begin{center}
-        Questions?
-    \end{center}
+\begin{frame}[noframenumbering,allowframebreaks]{References}
+    \printbibliography
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%               %%%%%%%%%%%%%%%%%%%%%%%%
@@ -615,21 +538,6 @@ With $\mathcal{K}$ the Green's function, the \emph{true} solution satisfies:
     \begin{center}
         Backup Slides
     \end{center}
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%                     %%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%  Theoretical results  %%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%                     %%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}[noframenumbering]{Theory}
-    \begin{itemize}
-        \item<2-> $a$ is a bounded bilinear form on $H^1 \times H^1$
-        \item<3-> $F$ is a bounded linear functional on $H^1$
-        \item<4-> G{\aa}rding inequality. There exist $M$ and an $\alpha > 0$ such that
-        \begin{equation*}
-            \operatorname{Re}(a(u,u)) + M \left\| u \right\|^2 \geq \alpha \left\| u \right\|_{H^1(\Omega)}^2.
-            \end{equation*}
-        \item<5-> For $h \leq h_0$, we have optimal-order $H^1$ and $L^2$ error estimaes.
-    \end{itemize}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%                      %%%%%%%%%%%%%%%%%%%%%%%%
