@@ -115,8 +115,8 @@ Graduate Fellowship under Award Number DE-SC0021110
             \item<1-> Model waves reflecting off of obstacle $\Gamma$
             \[
                 \begin{cases}
-                    -\Delta u + \kappa^2 u = 0, &  \mathbb R^d\setminus\Omega^c \\
-                    -\frac{\partial u}{\partial n} = f, & \Gamma
+                    -\Delta u - \kappa^2 u = 0, &  \mathbb R^d\setminus\Omega^c \\
+                    \frac{\partial u}{\partial n} = f, & \Gamma
                 \end{cases}
             \]
             \item<2-> \emph{Without} any spurious reflections from infinity
@@ -157,8 +157,8 @@ Graduate Fellowship under Award Number DE-SC0021110
             \item<1-> Problem we want to solve
             \[
                 \begin{cases}
-                    -\Delta u + \kappa^2 u = 0, &  \mathbb R^d\setminus\Omega \\
-                    -\frac{\partial u}{\partial n} = f, & \Gamma \\
+                    -\Delta u - \kappa^2 u = 0, &  \mathbb R^d\setminus\Omega \\
+                    \frac{\partial u}{\partial n} = f, & \Gamma \\
                     \lim_{r\to\infty} r^{(d-1)/2}
                         \left(\tfrac{\partial u}{\partial r} - i\kappa u\right)
                 = 0
@@ -167,8 +167,8 @@ Graduate Fellowship under Award Number DE-SC0021110
             \item<2-> Problem we can actually solve
             \[
                 \begin{cases}
-                    -\Delta u + \kappa^2 u = 0, & \Omega' \\
-                    -\frac{\partial u}{\partial n} = f, & \Gamma \\
+                    -\Delta u - \kappa^2 u = 0, & \Omega' \\
+                    \frac{\partial u}{\partial n} = f, & \Gamma \\
                     ?????, & \Sigma
                 \end{cases}
             \]
@@ -203,8 +203,8 @@ Graduate Fellowship under Award Number DE-SC0021110
     \begin{column}{0.55\textwidth}
         \[
             \begin{cases}
-                -\nabla \cdot \beta(x) \nabla u + \kappa^2 u = 0,  & \Omega^\prime \\
-                -\frac{\partial u}{\partial n}  =  f, &\Gamma \\
+                -\nabla \cdot \beta(x) \nabla u - \kappa^2 u = 0,  & \Omega^\prime \\
+                \frac{\partial u}{\partial n}  =  f, &\Gamma \\
                 u = 0, &\Sigma
             \end{cases}
         \]
@@ -225,17 +225,6 @@ Graduate Fellowship under Award Number DE-SC0021110
 \section{A nonlocal boundary condition}
 
 \begin{frame}{Integral form of the solution}
-\only<1>{
-    Using the Helmholtz Green's function $\mathcal K\left(\mathbf{x}\right)
-                =\displaystyle\frac{i}{4\pi \left|\mathbf{x}\right|}
-                \displaystyle e^{i\kappa\left|\mathbf{x}\right|}$,
-  \begin{figure}
-    \begin{center}
-    \includegraphics[width=0.5\textwidth]{images/2d_helmholtz_greens_function.png}
-    \end{center}\caption{$\mathcal K$ in 2D}
-  \end{figure}
-}
-\only<2->{
     \begin{columns}
       \begin{column}{0.7\textwidth}
              Using the Helmholtz Green's function \[\mathcal K\left(\mathbf{x}\right)
@@ -251,12 +240,14 @@ Graduate Fellowship under Award Number DE-SC0021110
       \end{column}
     \end{columns}
 
+    \uncover<2->{
     the \emph{true solution} satisfies          \footcite{Colton_Kress_1998,Kress_1999}
 
       \begin{equation*}
           u(x) = D(u)(x) - S(\tfrac{\partial u}{\partial n})(x), \quad x \in\Omega'
       \end{equation*}
       where
+      }
     \uncover<3->{
         \begin{align*}
             D(u)(x) &= \int_\Gamma \left( \tfrac{\partial}{\partial n} \mathcal K( x-y) \right)u(y) \,dy, 
@@ -264,7 +255,6 @@ Graduate Fellowship under Award Number DE-SC0021110
             S(u)(x) &= \int_\Gamma \mathcal K (x - y ) u(y)\,dy
         \end{align*}
     }
-}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%        %%%%%%%%%%%%%%%%%%%%%%%%
@@ -292,8 +282,8 @@ Graduate Fellowship under Award Number DE-SC0021110
                 \emph{Exact} boundary conditions
                  \[
                      \begin{cases}
-                         -\Delta u + \kappa^2 u = 0, & \Omega' \\
-                         -\frac{\partial u}{\partial n} = f, & \Gamma \\
+                         -\Delta u - \kappa^2 u = 0, & \Omega' \\
+                         \frac{\partial u}{\partial n} = f, & \Gamma \\
                          (i \kappa- \tfrac{\partial}{\partial n})\left( u - D(u) + S(f) \right) = 0, & \Sigma
                      \end{cases}
                  \]
